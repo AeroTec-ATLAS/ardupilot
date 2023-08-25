@@ -8,6 +8,7 @@
 #include <AP_Vehicle/ModeReason.h>
 #include "quadplane.h"
 #include <AP_AHRS/AP_AHRS.h>
+#include <AP_Math/chirp.h>
 
 class AC_PosControl;
 class AC_AttitudeControl_Multi;
@@ -53,8 +54,9 @@ public:
 #if HAL_QUADPLANE_ENABLED
         LOITER_ALT_QLAND = 25,
 #endif
+         SYSTEMID = 26,
     };
-
+     
     // Constructor
     Mode();
 
@@ -786,3 +788,66 @@ protected:
 };
 
 #endif
+
+
+class ModeSystemId : public Mode {
+
+public:
+     ModeSystemId(void);
+    Number mode_number() const override { return Number::SYSTEMID; }
+    const char *name() const override { return "SYSTEMID"; }
+
+    const char *name4() const override { return "SYID"; }
+
+    // bool init(bool ignore_checks) override; provavelmente mudar para enter
+    void update() override;
+    // void exit() override;
+
+   // bool requires_GPS() const override { return false; }
+  //  bool has_manual_throttle() const override { return true; }
+   // bool pre_arm_checks(size_t buflen, char *buffer) const override { return false; };
+   // bool is_autopilot() const override { return false; }
+    // bool logs_attitude() const override { return true; }
+
+    ///void set_magnitude(float input) { waveform_magnitude.set(input); }
+
+    static const struct AP_Param::GroupInfo var_info[];
+
+    Chirp chirp_input;
+
+protected:
+
+ bool _enter() override;
+
+private:
+
+      void log_data() const;
+
+    enum class AxisType {
+        NONE = 0,           // none
+        INPUT_ELEVATOR = 1,     // angle input elevator axis is being excited
+        INPUT_AILERON = 2,    // angle input aileron axis being excited
+        INPUT_RUDDER = 3,      // angle input rudder axis is being excited
+    };
+
+    AP_Int8 axis;               // Controls which axis are being excited. Set to non-zero to display other parameters
+    AP_Float waveform_magnitude;// Magnitude of chirp waveform
+    AP_Float frequency_start;   // Frequency at the start of the chirp
+    AP_Float frequency_stop;    // Frequency at the end of the chirp
+    AP_Float time_fade_in;      // Time to reach maximum amplitude of chirp
+    AP_Float time_record;       // Time taken to complete the chirp waveform
+    AP_Float time_fade_out;     // Time to reach zero amplitude after chirp finishes
+
+    bool att_bf_feedforward;    // Setting of attitude_control->get_bf_feedforward
+    float waveform_time;        // Time reference for waveform
+    float waveform_sample;      // Current waveform sample
+    float waveform_freq_rads;   // Instantaneous waveform frequency
+    float time_const_freq;      // Time at constant frequency before chirp starts
+    int8_t log_subsample;       // Subsample multiple for logging.
+
+    // System ID states
+    enum class SystemIDModeState {
+        SYSTEMID_STATE_STOPPED,
+        SYSTEMID_STATE_TESTING
+    } systemid_state;
+};

@@ -94,6 +94,12 @@ Mode *Plane::mode_from_mode_num(const enum Mode::Number num)
         break;
 #endif  // HAL_QUADPLANE_ENABLED
 
+#if MODE_SYSTEMID_ENABLED == ENABLED
+    case Mode::Number::SYSTEMID:
+        ret = (Mode *)g2.mode_systemid_ptr;
+        break;
+#endif
+
     }
     return ret;
 }
