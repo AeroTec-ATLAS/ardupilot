@@ -569,7 +569,8 @@ void Plane::set_servos_controlled(void)
                control_mode == &mode_training ||
                control_mode == &mode_acro ||
                control_mode == &mode_fbwa ||
-               control_mode == &mode_autotune) {
+               control_mode == &mode_autotune ||
+               control_mode == &mode_systemid) {
         // a manual throttle mode
         if (!rc().has_valid_input()) {
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, 0.0);

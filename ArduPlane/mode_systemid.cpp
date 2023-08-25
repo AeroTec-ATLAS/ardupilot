@@ -103,7 +103,7 @@ bool ModeSystemId::_enter()
 
 // systemId_exit - clean up systemId controller before exiting
 //void ModeSystemId::exit()
-// {}
+ // {}
 
 // systemId_run - runs the systemId controller
 // should be called at 100hz or more
@@ -178,7 +178,7 @@ void ModeSystemId::update()
 
     switch (systemid_state) {
         case SystemIDModeState::SYSTEMID_STATE_STOPPED:
-           // attitude_control->bf_feedforward(att_bf_feedforward);
+            plane.set_mode(plane.mode_loiter, ModeReason::MISSION_END);
             break;
         case SystemIDModeState::SYSTEMID_STATE_TESTING:
 
