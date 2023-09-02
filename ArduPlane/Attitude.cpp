@@ -339,7 +339,7 @@ void Plane::stabilize_yaw()
  */
 void Plane::stabilize()
 {
-    if (control_mode == &mode_manual) {
+    if (control_mode == &mode_manual || control_mode == &mode_systemid) {
         // reset steering controls
         steer_state.locked_course = false;
         steer_state.locked_course_err = 0;

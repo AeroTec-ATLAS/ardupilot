@@ -11,16 +11,17 @@ const AP_Param::GroupInfo ModeSystemId::var_info[] = {
 
     // @Param: _AXIS
     // @DisplayName: System identification axis
-    // @Description: Controls which axis are being excited.  Set to non-zero to see more parameters
+    // @Description: Controls which surfaces are being excited.  Set to non-zero to see more parameters
     // @User: Standard
-    // @Values: 0:None, 1:Input Roll Angle, 2:Input Pitch Angle, 3:Input Yaw Angle, 4:Recovery Roll Angle, 5:Recovery Pitch Angle, 6:Recovery Yaw Angle, 7:Rate Roll, 8:Rate Pitch, 9:Rate Yaw, 10:Mixer Roll, 11:Mixer Pitch, 12:Mixer Yaw, 13:Mixer Thrust
+    // @Values: 0:None, 1:Elevator, 2:Aileron, 3:Rudder
     AP_GROUPINFO_FLAGS("_AXIS", 1, ModeSystemId, axis, 0, AP_PARAM_FLAG_ENABLE),
 
     // @Param: _MAGNITUDE
     // @DisplayName: System identification Chirp Magnitude
-    // @Description: Magnitude of sweep in deg, deg/s and 0-1 for mixer outputs.
+    // @Description: Magnitude of sweep in outputs.
+    // @Range: 0.01 100
     // @User: Standard
-    AP_GROUPINFO("_MAGNITUDE", 2, ModeSystemId, waveform_magnitude, 15),
+    AP_GROUPINFO("_MAGNITUDE", 2, ModeSystemId, waveform_magnitude, 0.5f),
 
     // @Param: _F_START_HZ
     // @DisplayName: System identification Start Frequency
@@ -36,7 +37,7 @@ const AP_Param::GroupInfo ModeSystemId::var_info[] = {
     // @Range: 0.01 100
     // @Units: Hz
     // @User: Standard
-    AP_GROUPINFO("_F_STOP_HZ", 4, ModeSystemId, frequency_stop, 40),
+    AP_GROUPINFO("_F_STOP_HZ", 4, ModeSystemId, frequency_stop, 10),
 
     // @Param: _T_FADE_IN
     // @DisplayName: System identification Fade in time
@@ -44,7 +45,7 @@ const AP_Param::GroupInfo ModeSystemId::var_info[] = {
     // @Range: 0 20
     // @Units: s
     // @User: Standard
-    AP_GROUPINFO("_T_FADE_IN", 5, ModeSystemId, time_fade_in, 15),
+    AP_GROUPINFO("_T_FADE_IN", 5, ModeSystemId, time_fade_in, 5),
 
     // @Param: _T_REC
     // @DisplayName: System identification Total Sweep length
@@ -52,7 +53,7 @@ const AP_Param::GroupInfo ModeSystemId::var_info[] = {
     // @Range: 0 255
     // @Units: s
     // @User: Standard
-    AP_GROUPINFO("_T_REC", 6, ModeSystemId, time_record, 70),
+    AP_GROUPINFO("_T_REC", 6, ModeSystemId, time_record, 20),
 
     // @Param: _T_FADE_OUT
     // @DisplayName: System identification Fade out time
@@ -205,17 +206,17 @@ void ModeSystemId::update()
                     break;
 
                  case AxisType::INPUT_ELEVATOR:
-                    SRV_Channels::set_output_norm(SRV_Channel::k_elevator, waveform_sample*100.0f);
+                    SRV_Channels::set_output_norm(SRV_Channel::k_elevator, waveform_sample);
                     // target_roll += waveform_sample*100.0f;;
                     break;
 
                 case AxisType::INPUT_AILERON:
-                    SRV_Channels::set_output_norm(SRV_Channel::k_aileron, waveform_sample*100.0f);
+                    SRV_Channels::set_output_norm(SRV_Channel::k_aileron, waveform_sample);
                     // arget_pitch += waveform_sample*100.0f;
                     break;
 
                  case AxisType::INPUT_RUDDER:
-                    SRV_Channels::set_output_norm(SRV_Channel::k_rudder, waveform_sample*100.0f);
+                    SRV_Channels::set_output_norm(SRV_Channel::k_rudder, waveform_sample);
                     // target_yaw_rate += waveform_sample*100.0f;
                     break;
             }
