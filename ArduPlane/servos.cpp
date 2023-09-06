@@ -867,8 +867,8 @@ void Plane::set_servos(void)
     if (control_mode == &mode_training) {
         steering_control.rudder = rudder_in_expo(false);
     }
-    if (control_mode != mode_systemid) {
-    SRV_Channels::set_output_scaled(SRV_Channel::k_rudder, steering_control.rudder);
+    if (control_mode != &mode_systemid) {
+        SRV_Channels::set_output_scaled(SRV_Channel::k_rudder, steering_control.rudder);
     }
     SRV_Channels::set_output_scaled(SRV_Channel::k_steering, steering_control.steering);
 
