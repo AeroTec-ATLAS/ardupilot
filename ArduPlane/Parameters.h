@@ -493,6 +493,10 @@ public:
     // internal combustion engine control
     AP_ICEngine ice_control;
 #endif
+#if MODE_SYSTEMID_ENABLED == ENABLED
+    // we need a pointer to the mode for the G2 table
+    void *mode_systemid_ptr;
+#endif
 
     // RC input channels
     RC_Channels_Plane rc_channels;

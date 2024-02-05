@@ -569,7 +569,8 @@ void Plane::set_servos_controlled(void)
                control_mode == &mode_training ||
                control_mode == &mode_acro ||
                control_mode == &mode_fbwa ||
-               control_mode == &mode_autotune) {
+               control_mode == &mode_autotune ||
+               control_mode == &mode_systemid) {
         // a manual throttle mode
         if (!rc().has_valid_input()) {
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, 0.0);
@@ -866,8 +867,9 @@ void Plane::set_servos(void)
     if (control_mode == &mode_training) {
         steering_control.rudder = rudder_in_expo(false);
     }
-    
-    SRV_Channels::set_output_scaled(SRV_Channel::k_rudder, steering_control.rudder);
+    if (control_mode != &mode_systemid) {
+        SRV_Channels::set_output_scaled(SRV_Channel::k_rudder, steering_control.rudder);
+    }
     SRV_Channels::set_output_scaled(SRV_Channel::k_steering, steering_control.steering);
 
     if (control_mode == &mode_manual) {

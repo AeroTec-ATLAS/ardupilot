@@ -265,6 +265,74 @@ void Plane::Log_Write_Guided(void)
 #endif // OFFBOARD_GUIDED == ENABLED
 }
 
+struct PACKED log_SysIdD {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    float    waveform_time;
+    float    waveform_sample;
+    float    waveform_freq;
+    float    angle_x;
+    float    angle_y;
+    float    angle_z;
+    float    accel_x;
+    float    accel_y;
+    float    accel_z;
+};
+
+// Write an rate packet
+void Plane::Log_Write_SysID_Data(float waveform_time, float waveform_sample, float waveform_freq, float angle_x, float angle_y, float angle_z, float accel_x, float accel_y, float accel_z)
+{
+#if MODE_SYSTEMID_ENABLED == ENABLED
+    struct log_SysIdD pkt_sidd = {
+        LOG_PACKET_HEADER_INIT(LOG_SYSIDD_MSG),
+        time_us         : AP_HAL::micros64(),
+        waveform_time   : waveform_time,
+        waveform_sample : waveform_sample,
+        waveform_freq   : waveform_freq,
+        angle_x         : angle_x,
+        angle_y         : angle_y,
+        angle_z         : angle_z,
+        accel_x         : accel_x,
+        accel_y         : accel_y,
+        accel_z         : accel_z
+    };
+    logger.WriteBlock(&pkt_sidd, sizeof(pkt_sidd));
+#endif
+}
+
+struct PACKED log_SysIdS {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    uint8_t  systemID_axis;
+    float    waveform_magnitude;
+    float    frequency_start;
+    float    frequency_stop;
+    float    time_fade_in;
+    float    time_const_freq;
+    float    time_record;
+    float    time_fade_out;
+};
+
+// Write an rate packet
+void Plane::Log_Write_SysID_Setup(uint8_t systemID_axis, float waveform_magnitude, float frequency_start, float frequency_stop, float time_fade_in, float time_const_freq, float time_record, float time_fade_out)
+{
+#if MODE_SYSTEMID_ENABLED == ENABLED
+    struct log_SysIdS pkt_sids = {
+        LOG_PACKET_HEADER_INIT(LOG_SYSIDS_MSG),
+        time_us             : AP_HAL::micros64(),
+        systemID_axis       : systemID_axis,
+        waveform_magnitude  : waveform_magnitude,
+        frequency_start     : frequency_start,
+        frequency_stop      : frequency_stop,
+        time_fade_in        : time_fade_in,
+        time_const_freq     : time_const_freq,
+        time_record         : time_record,
+        time_fade_out       : time_fade_out
+    };
+    logger.WriteBlock(&pkt_sids, sizeof(pkt_sids));
+#endif
+}
+
 // incoming-to-vehicle mavlink COMMAND_INT can be logged
 struct PACKED log_CMDI {
     LOG_PACKET_HEADER;
