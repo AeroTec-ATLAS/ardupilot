@@ -1256,8 +1256,12 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     AP_SUBGROUPPTR(mode_systemid_ptr, "SID", 35, ParametersG2, ModeSystemId),
 #endif
 
-    
-    AP_GROUPEND
+    // @Param: _ENABLE
+    // @DisplayName: Quick RTL Enable
+    // @Description: Enable Quick RTL
+    // @User: Standard
+    // @Values: 0:Disabled, 1:Enabled
+    AP_GROUPINFO("QCKRTL_ENABLE", 36, ParametersG2, quickRTL_enabled, 1),
 };
 
 ParametersG2::ParametersG2(void) :

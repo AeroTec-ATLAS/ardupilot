@@ -8,6 +8,9 @@ bool ModeRTL::_enter()
     plane.rtl.done_climb = false;
 #if HAL_QUADPLANE_ENABLED
     plane.vtol_approach_s.approach_stage = Plane::Landing_ApproachStage::RTL;
+    if (plane.g2.quickRTL_enabled){
+        plane.TECS_controller.set_gliding_requested_flag(true);
+    }
 
     // Quadplane specific checks
     if (plane.quadplane.available()) {
@@ -45,6 +48,10 @@ void ModeRTL::update()
     plane.calc_nav_roll();
     plane.calc_nav_pitch();
     plane.calc_throttle();
+
+    if (plane.g2.quickRTL_enabled && plane.current_loc.alt - plane.get_RTL_altitude_cm() * 0.01f < 10) {
+        plane.TECS_controller.set_gliding_requested_flag(false);
+    }
 
     bool alt_threshold_reached = false;
     if (plane.g2.flight_options & FlightOptions::CLIMB_BEFORE_TURN) {
