@@ -20,6 +20,9 @@ void Mode::exit()
     if (plane.control_mode != &plane.mode_autotune){
         plane.autotune_restore();
     }
+    if (plane.control_mode != &plane.mode_rtl && plane.g2.quickRTL_enabled) {
+        plane.TECS_controller.set_gliding_requested_flag(false);
+    }
 
 }
 
