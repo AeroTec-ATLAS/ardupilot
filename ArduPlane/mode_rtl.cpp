@@ -8,7 +8,8 @@ bool ModeRTL::_enter()
     plane.rtl.done_climb = false;
 #if HAL_QUADPLANE_ENABLED
     plane.vtol_approach_s.approach_stage = Plane::Landing_ApproachStage::RTL;
-    if (plane.g2.quickRTL_enabled){
+    if (plane.g2.quickRTL_enabled && plane.current_loc.alt - plane.get_RTL_altitude_cm() > plane.g2.quickRTL_alt * 100){
+        gcs().send_text(MAV_SEVERITY_NOTICE, "Quick RTL enabled, gliding to RTL altitude");
         plane.TECS_controller.set_gliding_requested_flag(true);
     }
 
