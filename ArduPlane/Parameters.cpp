@@ -1262,6 +1262,15 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Standard
     // @Values: 0:Disabled, 1:Enabled
     AP_GROUPINFO("QCKRTL_ENABLE", 36, ParametersG2, quickRTL_enabled, 1),
+
+    // @Param: QCKRTL_ALT
+    // @DisplayName: Alt above RTL Alt for QCKRTL
+    // @Description: The vehicle will maintain idle throttle untill it reaches this altitude above the RTL altitude. Unused if Quick RTL is disabled
+    // @Units: m
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("QCKRTL_ALT", 37, ParametersG2, quickRTL_alt, 50),
 };
 
 ParametersG2::ParametersG2(void) :

@@ -235,7 +235,7 @@ void Plane::calc_airspeed_errors()
     } else if (control_mode == &mode_qrtl && quadplane.in_vtol_land_approach()) {
         target_airspeed_cm = quadplane.get_land_airspeed() * 100;
 #endif
-    } else if (control_mode == &mode_rtl && plane.g2.quickRTL_enabled && current_loc.alt - get_RTL_altitude_cm() > 1000) {
+    } else if (control_mode == &mode_rtl && plane.g2.quickRTL_enabled && current_loc.alt - get_RTL_altitude_cm() > plane.g2.quickRTL_alt * 100) {
         target_airspeed_cm = aparm.airspeed_max * 100;
     } else {
         // Normal airspeed target for all other cases

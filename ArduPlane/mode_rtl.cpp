@@ -49,7 +49,7 @@ void ModeRTL::update()
     plane.calc_nav_pitch();
     plane.calc_throttle();
 
-    if (plane.g2.quickRTL_enabled && plane.current_loc.alt - plane.get_RTL_altitude_cm() < 1000) {
+    if (plane.g2.quickRTL_enabled && plane.current_loc.alt - plane.get_RTL_altitude_cm() < plane.g2.quickRTL_alt * 100) {
         plane.TECS_controller.set_gliding_requested_flag(false);
     }
 
