@@ -867,13 +867,23 @@ bool Plane::verify_altitude_wait(const AP_Mission::Mission_Command &cmd)
 {
     if (current_loc.alt > cmd.content.altitude_wait.altitude*100.0f) {
         gcs().send_text(MAV_SEVERITY_INFO,"Reached altitude");
+        plane.balloon_release();
         return true;
     }
     if (auto_state.sink_rate > cmd.content.altitude_wait.descent_rate) {
         gcs().send_text(MAV_SEVERITY_INFO, "Reached descent rate %.1f m/s", (double)auto_state.sink_rate);
+        plane.balloon_release();
         return true;        
     }
+    
+    if (plane.balloon_safety_check()) {
+        return true;
+    }
 
+    if (plane.pilot_release_override()){
+        return true;
+    }
+    SRV_Channels::set_output_norm(SRV_Channel::k_scripting16, -1.0f);
     // if requested, wiggle servos
     if (cmd.content.altitude_wait.wiggle_time != 0) {
         static uint32_t last_wiggle_ms;

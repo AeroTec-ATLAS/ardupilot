@@ -1268,6 +1268,11 @@ public:
     bool set_land_descent_rate(float descent_rate) override;
 #endif // AP_SCRIPTING_ENABLED
 
+    void balloon_release(void);
+    bool balloon_safety_check(void);
+    bool pilot_release_override(void);
+    void balloon_release_override(void);
+
 };
 
 extern Plane plane;
