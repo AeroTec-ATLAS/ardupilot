@@ -881,11 +881,8 @@ void Plane::set_servos(void)
     if (control_mode != &mode_manual) {
         set_throttle();
     }
-
-     if (control_mode != &mode_auto){
-        // Send Pilot balloon release command directly
-        plane.pilot_release_override();
-    }
+    // Handle manual control of balloon release
+    plane.pilot_release_override();
 
     // Warn AHRS if we might take off soon
     set_takeoff_expected();

@@ -1272,6 +1272,7 @@ public:
     bool balloon_safety_check(void);
     bool pilot_release_override(void);
     void balloon_release_override(void);
+    bool balloon_released;
 
 };
 

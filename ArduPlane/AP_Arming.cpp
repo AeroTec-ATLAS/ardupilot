@@ -321,6 +321,9 @@ bool AP_Arming_Plane::arm(const AP_Arming::Method method, const bool do_arming_c
     // rising edge of delay_arming oneshot
     delay_arming = true;
 
+    // Reset balloon release flag
+    plane.balloon_released = false;
+
     send_arm_disarm_statustext("Throttle armed");
 
     return true;

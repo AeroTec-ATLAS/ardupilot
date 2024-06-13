@@ -883,7 +883,6 @@ bool Plane::verify_altitude_wait(const AP_Mission::Mission_Command &cmd)
     if (plane.pilot_release_override()){
         return true;
     }
-    SRV_Channels::set_output_norm(SRV_Channel::k_scripting16, -1.0f);
     // if requested, wiggle servos
     if (cmd.content.altitude_wait.wiggle_time != 0) {
         static uint32_t last_wiggle_ms;
