@@ -1266,6 +1266,10 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     AP_SUBGROUPINFO(precland, "PLND_", 35, ParametersG2, AC_PrecLand),
 #endif
 
+    // @Group: SID
+    // @Path: mode_systemid.cpp
+    AP_SUBGROUPPTR(balloon_release_ptr, "BALON_", 36, ParametersG2, BalloonRelease),
+
     AP_GROUPEND
 };
 
@@ -1277,6 +1281,7 @@ ParametersG2::ParametersG2(void) :
 #if HAL_BUTTON_ENABLED
     ,button_ptr(&plane.button)
 #endif
+    ,balloon_release_ptr(&plane.balloon)
 {
     AP_Param::setup_object_defaults(this, var_info);
 }

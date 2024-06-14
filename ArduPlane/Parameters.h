@@ -589,6 +589,8 @@ public:
     
     AP_Int8         axis_bitmask; // axes to be autotuned
 
+    void *balloon_release_ptr;
+
     // just to make compilation easier when all things are compiled out...
     uint8_t unused_integer;
 };

@@ -122,6 +122,7 @@
 #include "avoidance_adsb.h"
 #endif
 #include "AP_Arming.h"
+#include "balloon.h"
 
 /*
   main APM:Plane class
@@ -171,6 +172,7 @@ public:
     friend class ModeTakeoff;
     friend class ModeThermal;
     friend class ModeLoiterAltQLand;
+    friend class BalloonRelease;
 
 #if AP_EXTERNAL_CONTROL_ENABLED
     friend class AP_ExternalControl_Plane;
@@ -1268,11 +1270,7 @@ public:
     bool set_land_descent_rate(float descent_rate) override;
 #endif // AP_SCRIPTING_ENABLED
 
-    void balloon_release(void);
-    bool balloon_safety_check(void);
-    bool pilot_release_override(void);
-    void balloon_release_override(void);
-    bool balloon_released;
+    BalloonRelease balloon;
 
 };
 

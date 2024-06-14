@@ -92,6 +92,8 @@ bool Plane::start_command(const AP_Mission::Mission_Command& cmd)
         break;
 
     case MAV_CMD_NAV_ALTITUDE_WAIT:
+        plane.balloon.balloon_release_time_ms = 0;
+        plane.balloon.balloon_release_altitude_cm = 0;
         break;
 
 #if HAL_QUADPLANE_ENABLED
@@ -865,24 +867,30 @@ bool Plane::verify_continue_and_change_alt()
  */
 bool Plane::verify_altitude_wait(const AP_Mission::Mission_Command &cmd)
 {
-    if (current_loc.alt > cmd.content.altitude_wait.altitude*100.0f) {
+    if (current_loc.alt > cmd.content.altitude_wait.altitude*100.0f && !plane.balloon.balloon_released) {
         gcs().send_text(MAV_SEVERITY_INFO,"Reached altitude");
-        plane.balloon_release();
-        return true;
+        plane.balloon.balloon_release();
     }
-    if (auto_state.sink_rate > cmd.content.altitude_wait.descent_rate) {
+
+    if (auto_state.sink_rate > cmd.content.altitude_wait.descent_rate && !plane.balloon.balloon_released) {
         gcs().send_text(MAV_SEVERITY_INFO, "Reached descent rate %.1f m/s", (double)auto_state.sink_rate);
-        plane.balloon_release();
-        return true;        
+        plane.balloon.balloon_release();    
     }
     
-    if (plane.balloon_safety_check()) {
+    plane.balloon.balloon_safety_check();
+
+    plane.balloon.pilot_release_override();
+
+    if (plane.balloon.balloon_released && (plane.balloon.balloon_release_altitude_cm - current_loc.alt > plane.balloon.wait_altitude*100.0f )) {
+        gcs().send_text(MAV_SEVERITY_INFO, "Drop altitude reached, continuing");
+        return true;
+    }
+    // Wait 5 seconds after release
+    if (plane.balloon.balloon_released && (AP_HAL::millis() - plane.balloon.balloon_release_time_ms > plane.balloon.wait_time)) {
+        gcs().send_text(MAV_SEVERITY_INFO, "Drop time completed, continuing");
         return true;
     }
 
-    if (plane.pilot_release_override()){
-        return true;
-    }
     // if requested, wiggle servos
     if (cmd.content.altitude_wait.wiggle_time != 0) {
         static uint32_t last_wiggle_ms;

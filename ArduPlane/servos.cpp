@@ -882,7 +882,7 @@ void Plane::set_servos(void)
         set_throttle();
     }
     // Handle manual control of balloon release
-    plane.pilot_release_override();
+    plane.balloon.pilot_release_override();
 
     // Warn AHRS if we might take off soon
     set_takeoff_expected();
