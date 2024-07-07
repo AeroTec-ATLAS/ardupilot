@@ -248,7 +248,7 @@ AP_AdvancedFailsafe::check(uint32_t last_valid_rc_ms)
 
     case STATE_AUTO:
         // this is the normal mode. 
-        if (!gcs_link_ok) {
+        if (!gcs_link_ok && _gcs_fail_time_seconds > 0) {
             gcs().send_text(MAV_SEVERITY_DEBUG, "AFS State: DATA_LINK_LOSS");
             _state = STATE_DATA_LINK_LOSS;
             if (_wp_comms_hold) {
@@ -310,7 +310,7 @@ AP_AdvancedFailsafe::check(uint32_t last_valid_rc_ms)
         break;
 
     case STATE_GPS_LOSS:
-        if (!gcs_link_ok) {
+        if (!gcs_link_ok && _gcs_fail_time_seconds > 0) {
             // losing GCS link when GPS lock lost
             // leads to termination if AFS_DUAL_LOSS is 1
             if (!_terminate && _enable_dual_loss) {
