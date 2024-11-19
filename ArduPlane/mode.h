@@ -824,26 +824,28 @@ private:
       void log_data() const;
 
     enum class AxisType {
-        NONE = 0,           // none
-        INPUT_ELEVATOR = 1,     // angle input elevator axis is being excited
-        INPUT_AILERON = 2,    // angle input aileron axis being excited
-        INPUT_RUDDER = 3,      // angle input rudder axis is being excited
+        NONE = 0,                // none
+        INPUT_ELEVATOR = 1,      // angle input elevator axis is being excited
+        INPUT_AILERON = 2,       // angle input aileron axis being excited
+        INPUT_RUDDER = 3,        // angle input rudder axis is being excited
     };
 
-    AP_Int8 axis;               // Controls which axis are being excited. Set to non-zero to display other parameters
-    AP_Float waveform_magnitude;// Magnitude of chirp waveform
-    AP_Float frequency_start;   // Frequency at the start of the chirp
-    AP_Float frequency_stop;    // Frequency at the end of the chirp
-    AP_Float time_fade_in;      // Time to reach maximum amplitude of chirp
-    AP_Float time_record;       // Time taken to complete the chirp waveform
-    AP_Float time_fade_out;     // Time to reach zero amplitude after chirp finishes
+    AP_Int8 axis;                // Controls which axis are being excited. Set to non-zero to display other parameters
+    AP_Float waveform_magnitude; // Magnitude of chirp waveform
+    AP_Float frequency_start;    // Frequency at the start of the chirp
+    AP_Float frequency_stop;     // Frequency at the end of the chirp
+    AP_Float time_fade_in;       // Time to reach maximum amplitude of chirp
+    AP_Float time_record;        // Time taken to complete the chirp waveform
+    AP_Float time_fade_out;      // Time to reach zero amplitude after chirp finishes
+    AP_Float min_alt;            // Minimum altitude required for sytem-id to function
+    AP_Float arm_alt;            // Minimum altitude thats allows for the arm of system-id
 
-    bool att_bf_feedforward;    // Setting of attitude_control->get_bf_feedforward
-    float waveform_time;        // Time reference for waveform
-    float waveform_sample;      // Current waveform sample
-    float waveform_freq_rads;   // Instantaneous waveform frequency
-    float time_const_freq;      // Time at constant frequency before chirp starts
-    int8_t log_subsample;       // Subsample multiple for logging.
+    bool att_bf_feedforward;     // Setting of attitude_control->get_bf_feedforward
+    float waveform_time;         // Time reference for waveform
+    float waveform_sample;       // Current waveform sample
+    float waveform_freq_rads;    // Instantaneous waveform frequency
+    float time_const_freq;       // Time at constant frequency before chirp starts
+    int8_t log_subsample;        // Subsample multiple for logging.
 
     // System ID states
     enum class SystemIDModeState {

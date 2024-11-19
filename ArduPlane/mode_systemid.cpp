@@ -63,6 +63,23 @@ const AP_Param::GroupInfo ModeSystemId::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_T_FADE_OUT", 7, ModeSystemId, time_fade_out, 2),
 
+    // @Param: _MIN_ALT
+    // @DisplayName: System identification Minimum Altitude
+    // @Description: Minimum altitude needed for system id mode to function. In case of failure, automatically switches mode to loiter.
+    // @Range: -10 500
+    // @Units: m
+    // @User: Standard
+    AP_GROUPINFO("_MIN_ALT", 8, ModeSystemId, min_alt, 50),
+
+
+    // @Param: _ARM_ALT
+    // @DisplayName: System identification Arm Altitude
+    // @Description: Minimum altitude needed to arm the system id mode
+    // @Range: -10 500
+    // @Units: m
+    // @User: Standard
+    AP_GROUPINFO("_ARM_ALT", 9, ModeSystemId, arm_alt, 80),
+
     AP_GROUPEND
 };
 
@@ -79,6 +96,12 @@ bool ModeSystemId::_enter()
     // check if enabled
     if (axis == 0) {
         gcs().send_text(MAV_SEVERITY_WARNING, "No axis selected, SID_AXIS = 0");
+        return false;
+    }
+
+    //check if altitude is higher than allowed to arm
+    if ( arm_alt > plane.relative_ground_altitude(plane.g.rangefinder_landing)) {
+        gcs().send_text(MAV_SEVERITY_WARNING, "Arm altitude lower than allowed");
         return false;
     }
 
@@ -167,20 +190,25 @@ void ModeSystemId::update()
     // float pilot_throttle_scaled = get_pilot_desired_throttle();
 
 
-    if ((systemid_state == SystemIDModeState::SYSTEMID_STATE_TESTING) && (!is_positive(frequency_start) || !is_positive(frequency_stop) || is_negative(time_fade_in) || !is_positive(time_record) || is_negative(time_fade_out) || (time_record <= time_fade_in))) {
+    // If an error is detected, set system-id to stop
+    if ((systemid_state == SystemIDModeState::SYSTEMID_STATE_TESTING) && (!is_positive(frequency_start) || !is_positive(frequency_stop) || is_negative(time_fade_in) || !is_positive(time_record) || is_negative(time_fade_out) || (time_record <= time_fade_in) || (min_alt > plane.relative_ground_altitude(plane.g.rangefinder_landing)))) {
         systemid_state = SystemIDModeState::SYSTEMID_STATE_STOPPED;
         gcs().send_text(MAV_SEVERITY_INFO, "SystemID Parameter Error");
     }
 
-
+    // Update the control surface movement
     waveform_time += plane.G_Dt;
     waveform_sample = chirp_input.update(waveform_time - SYSTEM_ID_DELAY, waveform_magnitude);
     waveform_freq_rads = chirp_input.get_frequency_rads();
 
     switch (systemid_state) {
+
+        // If the state is set to be stopped, change to mode to the one chosen
         case SystemIDModeState::SYSTEMID_STATE_STOPPED:
             plane.set_mode(plane.mode_loiter, ModeReason::MISSION_END);
             break;
+        
+        //If the system-id is running
         case SystemIDModeState::SYSTEMID_STATE_TESTING:
 
             /* if (!plane.is_flying()) {  
@@ -199,6 +227,7 @@ void ModeSystemId::update()
                 break;
             }
 
+            // Depending on the axis, set the chosen surface control to the waveform and the rest to 0 
             switch ((AxisType)axis.get()) {
                 case AxisType::NONE:
                     systemid_state = SystemIDModeState::SYSTEMID_STATE_STOPPED;
@@ -206,16 +235,22 @@ void ModeSystemId::update()
                     break;
 
                  case AxisType::INPUT_ELEVATOR:
+                    SRV_Channels::set_output_norm(SRV_Channel::k_aileron, 0);
+                    SRV_Channels::set_output_norm(SRV_Channel::k_rudder, 0);
                     SRV_Channels::set_output_norm(SRV_Channel::k_elevator, waveform_sample);
                     // target_roll += waveform_sample*100.0f;;
                     break;
 
                 case AxisType::INPUT_AILERON:
+                    SRV_Channels::set_output_norm(SRV_Channel::k_elevator, 0);
+                    SRV_Channels::set_output_norm(SRV_Channel::k_rudder, 0);
                     SRV_Channels::set_output_norm(SRV_Channel::k_aileron, waveform_sample);
                     // arget_pitch += waveform_sample*100.0f;
                     break;
 
                  case AxisType::INPUT_RUDDER:
+                    SRV_Channels::set_output_norm(SRV_Channel::k_aileron, 0);
+                    SRV_Channels::set_output_norm(SRV_Channel::k_elevator, 0);
                     SRV_Channels::set_output_norm(SRV_Channel::k_rudder, waveform_sample);
                     // target_yaw_rate += waveform_sample*100.0f;
                     break;
